@@ -40,7 +40,14 @@ func Exec(ctx context.Context, args Args) error {
 		return err
 	}
 
-	cmd := exec.Command("gitleaks", "--path="+args.Path, "--commit="+args.Commit.Rev, "--report="+file.Name())
+	gCmd := exec.Command("git", "config", "--global", "--add", "safe.directory", "/harness")
+	gCmd.Stderr = os.Stderr
+	gCmd.Stdout = os.Stdout
+
+	err = gCmd.Run()
+
+	//	cmd := exec.Command("gitleaks", "--path="+args.Path, "--commit="+args.Commit.Rev, "--report="+file.Name())
+	cmd := exec.Command("gitleaks", "detect", "-f", "junit", "-r", "jUnitReport.xml", "-v")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
